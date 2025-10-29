@@ -21,7 +21,6 @@ def ensure_database_exists(db_url: str):
         with tmp_engine.connect() as conn:
             conn.execute(text("SELECT 1"))
         tmp_engine.dispose()
-        print(f"Database '{db_name}' already exists ✅")
         return
     except OperationalError:
         print(f"Database '{db_name}' not found, creating it...")
