@@ -3,10 +3,13 @@ from __future__ import annotations
 
 from typing import Optional, Sequence, Any, Dict
 
+from string import Template
+
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
+
 
 from app.models.monster_card import MonsterCard, CardType, DisplayType
 from app.schemas.monster_card import MonsterCardCreate
@@ -161,8 +164,28 @@ def display_monster_card(db: Session, card_id: int, display: DisplayType) -> str
     card = get_card(db, card_id)
     if card is None:
         raise NotFoundError(f"Card id {card_id} not found.")
+    
     HTML_FORMATS = Path(os.getenv("HTML_FORMATS"))
-    file_path =  HTML_FORMATS / display.value
-    return file_path.read_text(encoding="utf-8")  # Placeholder for actual HTML rendering logic
+    html_display_path =  HTML_FORMATS / display.value
+    raw_html = html_display_path.read_text(encoding="utf-8")
+    monster_filename = f"{card.name.capitalize().replace(' ', '_')}.png"
+    image_path = f"/monster-images/{monster_filename}"
+
+    primary_type_image_path = f"/type-icons/{card.primary_type.value.lower()}_icon.png"
+    secondary_type_image_path = f"/type-icons/{card.secondary_type.value.lower()}_icon.png"
+    
+    template = Template(raw_html)
+    output_html = template.safe_substitute(
+        name=card.name,
+        description=card.description or "",
+        primary_type_image_path = primary_type_image_path,
+        secondary_type_image_path = secondary_type_image_path,
+        health=card.health,
+        attack=card.attack,
+        defense=card.defense,
+        speed=card.speed,
+        image_path= image_path,  # optional if you have per-card images
+    )
+    return output_html  # Placeholder for actual HTML rendering logic
 
     

@@ -110,21 +110,21 @@ def display_normal_monster_card(card_id: int, db: DbSession):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     
 @router.get("/display/sunlight/{card_id:int}",response_class=HTMLResponse)
-def display_normal_monster_card(card_id: int, db: DbSession):
+def display_sunlight_monster_card(card_id: int, db: DbSession):
     try:
         return display_monster_card(db,card_id, DisplayType.sunlight)
     except NotFoundError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     
 @router.get("/display/moonlight/{card_id:int}",response_class=HTMLResponse)
-def display_normal_monster_card(card_id: int, db: DbSession):
+def display_moonlight_monster_card(card_id: int, db: DbSession):
     try:
         return display_monster_card(db,card_id, DisplayType.moonlight)
     except NotFoundError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     
 @router.get("/display/twilight/{card_id:int}",response_class=HTMLResponse)
-def display_normal_monster_card(card_id: int, db: DbSession):
+def display_twilight_monster_card(card_id: int, db: DbSession):
     try:
         return display_monster_card(db,card_id, DisplayType.twilight)
     except NotFoundError as e:
