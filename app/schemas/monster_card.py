@@ -23,3 +23,5 @@ class MonsterCardCreate(MonsterCardBase):
 # Inherting from MonsterCardBase to avoid redundancy and ORMModel for ORM compatibility (json serialization)
 class MonsterCardOut(ORMModel,MonsterCardBase):
     id: int # response model inherits ORMModel ⇒ from_attributes=True
+
+

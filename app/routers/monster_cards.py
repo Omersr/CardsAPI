@@ -8,18 +8,10 @@ from pydantic import BaseModel, Field
 from app.deps import get_db
 
 from app.database import SessionLocal
-from app.models.monster_card import CardType
+from app.models.monster_card import CardType, DisplayType
 from app.schemas.monster_card import MonsterCardCreate, MonsterCardOut
-from app.crud.monster_card import (
-    create_card,
-    get_card,
-    get_card_by_name,
-    list_cards,
-    update_card,
-    delete_card,
-    DuplicateNameError,
-    NotFoundError,
-)
+from app.crud.monster_card import *
+from fastapi.responses import HTMLResponse
 
 router = APIRouter(prefix="/monster-cards", tags=["monster-cards"])
 
@@ -78,12 +70,16 @@ def get_monster_card(card_id: int, db: DbSession):
     return card
 
 
+    
+
 @router.get("/by-name/{name}", response_model=MonsterCardOut)
 def get_monster_card_by_name(name: str, db: DbSession):
     card = get_card_by_name(db, name)
     if not card:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Card not found.")
     return card
+
+
 
 
 @router.patch("/{card_id:int}", response_model=MonsterCardOut)
@@ -102,5 +98,34 @@ def remove_monster_card(card_id: int, db: DbSession):
     try:
         delete_card(db, card_id)
         return Response(status_code=status.HTTP_204_NO_CONTENT)
+    except NotFoundError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+
+@router.get("/display/normal/{card_id:int}",response_class=HTMLResponse)
+def display_normal_monster_card(card_id: int, db: DbSession):
+    try:
+        return display_monster_card(db,card_id, DisplayType.normal)
+    except NotFoundError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    
+@router.get("/display/sunlight/{card_id:int}",response_class=HTMLResponse)
+def display_normal_monster_card(card_id: int, db: DbSession):
+    try:
+        return display_monster_card(db,card_id, DisplayType.sunlight)
+    except NotFoundError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    
+@router.get("/display/moonlight/{card_id:int}",response_class=HTMLResponse)
+def display_normal_monster_card(card_id: int, db: DbSession):
+    try:
+        return display_monster_card(db,card_id, DisplayType.moonlight)
+    except NotFoundError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    
+@router.get("/display/twilight/{card_id:int}",response_class=HTMLResponse)
+def display_normal_monster_card(card_id: int, db: DbSession):
+    try:
+        return display_monster_card(db,card_id, DisplayType.twilight)
     except NotFoundError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))

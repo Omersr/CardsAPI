@@ -8,8 +8,10 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 
-from app.models.monster_card import MonsterCard, CardType
+from app.models.monster_card import MonsterCard, CardType, DisplayType
 from app.schemas.monster_card import MonsterCardCreate
+import os
+from pathlib import Path
 
 
 # --- Domain-level errors (so routers can translate to HTTP codes later) ---
@@ -150,3 +152,17 @@ def delete_card(db: Session, card_id: int) -> None:
 
     db.delete(card)
     db.commit()
+
+
+def display_monster_card(db: Session, card_id: int, display: DisplayType) -> str:
+    """
+    Displays a card in an html format, must be one of the predefined formats.
+    """
+    card = get_card(db, card_id)
+    if card is None:
+        raise NotFoundError(f"Card id {card_id} not found.")
+    HTML_FORMATS = Path(os.getenv("HTML_FORMATS"))
+    file_path =  HTML_FORMATS / display.value
+    return file_path.read_text(encoding="utf-8")  # Placeholder for actual HTML rendering logic
+
+    

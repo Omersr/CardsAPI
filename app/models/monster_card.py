@@ -22,6 +22,12 @@ class CardType(str, Enum):
     wind = "wind"
     plant = "plant"
 
+class DisplayType(str, Enum):
+    normal = "normal_card.html"
+    sunlight = "sunlight_card.html"
+    moonlight = "moonlight_card.html"
+    twilight = "twilight_card.html"
+
 class MonsterCard(Base):
     __tablename__ = "monster_cards"
 
