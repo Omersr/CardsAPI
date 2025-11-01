@@ -1,0 +1,151 @@
+# card size : 230 x 150
+# Create pipline to create new cards
+effectiveness_table = {
+        "arms": {
+            "arms": 1.0,
+            "dark": 0.5,
+            "earth": 2.0,
+            "fire": 1.0,
+            "frost" : 2.0,
+            "light": 0.5,
+            "lightning": 1.0,
+            "magic": 0.5,
+            "mineral": 2.0,
+            "wind": 1.0,
+            "water": 1.0
+        },
+        "dark": {
+            "arms": 2.0,
+            "dark": 1.0,
+            "earth": 1.0,
+            "fire": 0.5,
+            "frost" : 1.0,
+            "light": 0.5,
+            "lightning": 0.5,
+            "magic": 2.0,
+            "mineral": 1.0,
+            "wind": 1.0,
+            "water": 1.0
+        },
+        "earth": {
+            "arms": 0.5,
+            "dark": 1.0,
+            "earth": 1.0,
+            "fire": 2.0,
+            "frost" : 1.0,
+            "light": 1.0,
+            "lightning": 2.0,
+            "magic": 1.0,
+            "mineral": 2.0,
+            "wind": 0.5,
+            "water": 0.5
+        },
+        "fire": {
+            "arms": 1.0,
+            "dark": 2.0,
+            "earth": 0.5,
+            "fire": 1.0,
+            "frost" : 2.0,
+            "light": 0.5,
+            "lightning": 1.0,
+            "magic": 0.5,
+            "mineral": 0.5,
+            "wind": 2.0,
+            "water": 0.5
+        },
+        "frost": {
+            "arms": 1.0,
+            "dark": 0.5,
+            "earth": 2.0,
+            "fire": 0.5,
+            "frost" : 1.0,
+            "light": 1.0,
+            "lightning": 1.0,
+            "magic": 0.5,
+            "mineral": 0.5,
+            "wind": 2.0,
+            "water": 2.0
+        },
+        "light": {
+            "arms": 2.0,
+            "dark": 2.0,
+            "earth": 1.0,
+            "fire": 0.5,
+            "frost" : 1.0,
+            "light": 1.0,
+            "lightning": 1.0,
+            "magic": 1.0,
+            "mineral": 0.5,
+            "wind": 1.0,
+            "water": 1.0
+        },
+        "lightning": {
+            "arms": 1.0,
+            "dark": 2.0,
+            "earth": 0.5,
+            "fire": 1.0,
+            "frost" : 1.0,
+            "light": 1.0,
+            "lightning": 1.0,
+            "magic": 0.5,
+            "mineral": 1.0,
+            "wind": 1.0,
+            "water": 2.0
+        },
+        "magic": {
+            "arms": 2.0,
+            "dark": 0.5,
+            "earth": 1.0,
+            "fire": 1.0,
+            "frost" : 1.0,
+            "light": 1.0,
+            "lightning": 1.0,
+            "magic": 1.0,
+            "mineral": 0.5,
+            "wind": 1.0,
+            "water": 1.0
+        },
+        "mineral": {
+            "arms": 0.5,
+            "dark": 1.0,
+            "earth": 0.5,
+            "fire": 2.0,
+            "frost" : 2.0,
+            "light": 2.0,
+            "lightning": 1.0,
+            "magic": 2.0,
+            "mineral": 1.0,
+            "wind": 1.0,
+            "water": 1.0
+        },
+        "wind": {
+            "arms": 1.0,
+            "dark": 1.0,
+            "earth": 2.0,
+            "fire": 0.5,
+            "frost" : 0.5,
+            "light": 1.0,
+            "lightning": 1.0,
+            "magic": 1.0,
+            "mineral": 1.0,
+            "wind": 1.0,
+            "water": 1.0
+        },
+        "water": {
+            "arms": 1.0,
+            "dark": 1.0,
+            "earth": 2.0,
+            "fire": 2.0,
+            "frost" : 0.5,
+            "light": 1.0,
+            "lightning": 0.5,
+            "magic": 1.0,
+            "mineral": 1.0,
+            "wind": 1.0,
+            "water": 1.0
+        }
+        
+        
+    }
+        
+        

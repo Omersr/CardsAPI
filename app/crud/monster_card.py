@@ -13,8 +13,8 @@ from fastapi import HTTPException
 
 from app.models.monster_card import MonsterCard, CardType, DisplayType
 from app.schemas.monster_card import MonsterCardCreate
-import os
-from pathlib import Path
+from app.config import *
+
 
 
 # --- Domain-level errors (so routers can translate to HTTP codes later) ---
@@ -28,6 +28,25 @@ class NotFoundError(Exception):
 
 
 # --- CRUD helpers ---
+
+
+from PIL import Image
+from pathlib import Path
+
+def _ensure_image_size(image_path: Path, target_size=(230, 150)) -> None:
+    """
+    Ensures an image has the correct size (230x150). 
+    If not, resizes and overwrites the file in place.
+    """
+    if not image_path.exists():
+        return
+    try:
+        with Image.open(image_path) as img:
+            if img.size != target_size:
+                resized = img.resize(target_size, Image.Resampling.LANCZOS)
+                resized.save(image_path)
+    except Exception as e:
+        raise ValueError(f"[ERROR] Could not process image {image_path}: {e}")
 
 def create_card(db: Session, data: MonsterCardCreate) -> MonsterCard:
     """
@@ -157,6 +176,9 @@ def delete_card(db: Session, card_id: int) -> None:
     db.commit()
 
 
+
+
+
 def display_monster_card(db: Session, card_id: int, display: DisplayType) -> str:
     """
     Displays a card in an html format, must be one of the predefined formats.
@@ -165,14 +187,13 @@ def display_monster_card(db: Session, card_id: int, display: DisplayType) -> str
     if card is None:
         raise NotFoundError(f"Card id {card_id} not found.")
     
-    HTML_FORMATS = Path(os.getenv("HTML_FORMATS"))
-    html_display_path =  HTML_FORMATS / display.value
+    html_display_path =  HTML_FORMATS_DIR / display.value
     raw_html = html_display_path.read_text(encoding="utf-8")
     monster_filename = f"{card.name.capitalize().replace(' ', '_')}.png"
-    image_path = f"/monster-images/{monster_filename}"
-
-    primary_type_image_path = f"/type-icons/{card.primary_type.value.lower()}_icon.png"
-    secondary_type_image_path = f"/type-icons/{card.secondary_type.value.lower()}_icon.png"
+    _ensure_image_size(MONSTER_CARD_IMAGES_DIR / monster_filename)
+    image_path = f"{PUBLIC_MONSTER_IMAGES_URL}/{monster_filename}"
+    primary_type_image_path = f"{PUBLIC_TYPE_ICONS_URL}/{card.primary_type.value.lower()}_icon.png"
+    secondary_type_image_path = f"{PUBLIC_TYPE_ICONS_URL}/{card.secondary_type.value.lower()}_icon.png"
     
     template = Template(raw_html)
     output_html = template.safe_substitute(
