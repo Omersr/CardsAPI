@@ -194,6 +194,10 @@ def display_monster_card(db: Session, card_id: int, display: DisplayType) -> str
     image_path = f"{PUBLIC_MONSTER_IMAGES_URL}/{monster_filename}"
     primary_type_image_path = f"{PUBLIC_TYPE_ICONS_URL}/{card.primary_type.value.lower()}_icon.png"
     secondary_type_image_path = f"{PUBLIC_TYPE_ICONS_URL}/{card.secondary_type.value.lower()}_icon.png"
+    secondary_type_image_path = f"{PUBLIC_TYPE_ICONS_URL}/{card.secondary_type.value.lower()}_icon.png"
+    team_icon_path = f"{PUBLIC_TEAM_ICONS_URL}/icebear_team_icon.png"
+    decoration_left = f"{PUBLIC_TEAM_ICONS_URL}/banner_decoration_left.png"
+    decoration_right = f"{PUBLIC_TEAM_ICONS_URL}/banner_decoration_right.png"
     
     template = Template(raw_html)
     output_html = template.safe_substitute(
@@ -205,7 +209,10 @@ def display_monster_card(db: Session, card_id: int, display: DisplayType) -> str
         attack=card.attack,
         defense=card.defense,
         speed=card.speed,
-        image_path= image_path,  # optional if you have per-card images
+        image_path= image_path,
+        team_icon_path = team_icon_path,
+        decoration_right = decoration_right,
+        decoration_left = decoration_left,
     )
     return output_html  # Placeholder for actual HTML rendering logic
 

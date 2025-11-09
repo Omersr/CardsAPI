@@ -21,3 +21,4 @@ PUBLIC_ASSETS_BASE_URL = "/assets"  # you mounted this in main.py
 
 PUBLIC_MONSTER_IMAGES_URL = f"{PUBLIC_ASSETS_BASE_URL}/monster_cards/monster_card_images"
 PUBLIC_TYPE_ICONS_URL = f"{PUBLIC_ASSETS_BASE_URL}/monster_cards/types_icons"
+PUBLIC_TEAM_ICONS_URL = f"{PUBLIC_ASSETS_BASE_URL}/team_icons/"
