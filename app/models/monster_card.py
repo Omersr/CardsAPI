@@ -2,7 +2,7 @@
 from enum import Enum
 from typing import Optional
 
-from sqlalchemy import BigInteger, CheckConstraint, Enum as PgEnum, Integer, String, Text, UniqueConstraint, Index
+from sqlalchemy import BigInteger, CheckConstraint, Enum as PgEnum, Integer, String, Text, UniqueConstraint, Index, Boolean
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database import Base
@@ -28,6 +28,26 @@ class DisplayType(str, Enum):
     moonlight = "moonlight_card.html"
     twilight = "twilight_card.html"
 
+class TeamType(str, Enum):
+    bull = "bull"
+    owl = "owl"
+    swordfish = "swordfish"
+    neutral = "neutral"
+    @classmethod
+    def _missing_(cls, value):
+        # Whenever an invalid value is passed, return neutral
+        return cls.neutral
+    
+class RarityType(str, Enum):
+    normal = "normal"
+    sunlight = "sunlight"
+    moonlight = "moonlight"
+    twilight = "twilight"
+    @classmethod
+    def _missing_(cls, value):
+        # Whenever an invalid value is passed, return neutral
+        return cls.normal
+
 class MonsterCard(Base):
     __tablename__ = "monster_cards"
 
@@ -48,11 +68,23 @@ class MonsterCard(Base):
         nullable=True,
         index=True,
     )
+    team: Mapped[Optional[TeamType]] = mapped_column(
+        PgEnum(TeamType, name="team_type_enum", create_type=False, native_enum=True),
+        nullable=True,
+        default=TeamType.neutral,
+        index=True,
+    )
+    rarity: Mapped[Optional[RarityType]] = mapped_column(
+        PgEnum(RarityType, name="rarity_type_enum", create_type=False, native_enum=True),
+        nullable=True,
+        default=RarityType.normal,
+    )
 
     health: Mapped[int] = mapped_column(Integer, nullable=False)
     attack: Mapped[int] = mapped_column(Integer, nullable=False)
     defense: Mapped[int] = mapped_column(Integer, nullable=False)
     speed: Mapped[int] = mapped_column(Integer, nullable=False)
+    alive: Mapped[bool] = mapped_column(Boolean,nullable=True,default=True)
 
     __table_args__ = (
         UniqueConstraint("name", name="uq_monster_cards_name"),

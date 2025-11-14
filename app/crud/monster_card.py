@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException
 
 
-from app.models.monster_card import MonsterCard, CardType, DisplayType
+from app.models.monster_card import MonsterCard, CardType, DisplayType, TeamType, RarityType
 from app.schemas.monster_card import MonsterCardCreate
 from app.config import *
 
@@ -28,6 +28,7 @@ class NotFoundError(Exception):
 
 
 # --- CRUD helpers ---
+
 
 
 from PIL import Image
@@ -59,12 +60,15 @@ def create_card(db: Session, data: MonsterCardCreate) -> MonsterCard:
     card = MonsterCard(
         name=data.name,
         description=data.description,
-        primary_type=data.primary_type,
-        secondary_type=secondary,
+        primary_type=data.primary_type.lower(),
+        secondary_type=secondary.lower(),
         health=data.health,
         attack=data.attack,
         defense=data.defense,
         speed=data.speed,
+        team = data.team.lower(),
+        rarity = data.rarity.lower(),
+        alive = data.alive
     )
 
     db.add(card)
@@ -126,6 +130,9 @@ _UPDATABLE_FIELDS = {
     "attack",
     "defense",
     "speed",
+    "team",
+    "rarity",
+    "alive"
 }
 
 def update_card(db: Session, card_id: int, updates: Dict[str, Any]) -> MonsterCard:
@@ -177,9 +184,13 @@ def delete_card(db: Session, card_id: int) -> None:
 
 
 
-
-
-def display_monster_card(db: Session, card_id: int, display: DisplayType) -> str:
+RARITY_TO_TEMPLATE = {
+    RarityType.normal: "normal_card.html",
+    RarityType.sunlight: "sunlight_card.html",
+    RarityType.moonlight: "moonlight_card.html",
+    RarityType.twilight: "twilight_card.html",
+}
+def display_monster_card(db: Session, card_id: int) -> str:
     """
     Displays a card in an html format, must be one of the predefined formats.
     """
@@ -187,7 +198,9 @@ def display_monster_card(db: Session, card_id: int, display: DisplayType) -> str
     if card is None:
         raise NotFoundError(f"Card id {card_id} not found.")
     
-    html_display_path =  HTML_FORMATS_DIR / display.value
+    rarity = card.rarity or RarityType.normal
+    template_name = RARITY_TO_TEMPLATE[rarity]
+    html_display_path =  HTML_FORMATS_DIR / template_name
     raw_html = html_display_path.read_text(encoding="utf-8")
     monster_filename = f"{card.name.capitalize().replace(' ', '_')}.png"
     _ensure_image_size(MONSTER_CARD_IMAGES_DIR / monster_filename)
@@ -195,10 +208,13 @@ def display_monster_card(db: Session, card_id: int, display: DisplayType) -> str
     primary_type_image_path = f"{PUBLIC_TYPE_ICONS_URL}/{card.primary_type.value.lower()}_icon.png"
     secondary_type_image_path = f"{PUBLIC_TYPE_ICONS_URL}/{card.secondary_type.value.lower()}_icon.png"
     secondary_type_image_path = f"{PUBLIC_TYPE_ICONS_URL}/{card.secondary_type.value.lower()}_icon.png"
-    team_icon_path = f"{PUBLIC_TEAM_ICONS_URL}/icebear_team_icon.png"
+    team_icon_path = f"{PUBLIC_TEAM_ICONS_URL}/{card.team.value.lower()}_team_banner.png"
     decoration_left = f"{PUBLIC_TEAM_ICONS_URL}/banner_decoration_left.png"
     decoration_right = f"{PUBLIC_TEAM_ICONS_URL}/banner_decoration_right.png"
-    
+    if card.team == TeamType.neutral:
+        team_icon_path = f"{PUBLIC_TEAM_ICONS_URL}/{card.team.value.lower()}_monster_banner.png"
+        decoration_left = f"{PUBLIC_TEAM_ICONS_URL}/neutral_banner_decoration_left.png"
+        decoration_right = f"{PUBLIC_TEAM_ICONS_URL}/neutral_banner_decoration_right.png"
     template = Template(raw_html)
     output_html = template.safe_substitute(
         name=card.name,

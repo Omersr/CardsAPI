@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import Optional
-from app.models.monster_card import CardType
+from app.models.monster_card import CardType, TeamType,RarityType
 from app.schemas.base import ORMModel, InputModel
 
 
@@ -14,6 +14,9 @@ class MonsterCardBase(InputModel):
     attack: int = Field(..., ge=0)
     defense: int = Field(..., ge=0)
     speed: int = Field(..., ge=0)
+    team: TeamType
+    rarity: RarityType
+    alive : Optional[bool] = True
 
 
 class MonsterCardCreate(MonsterCardBase):
@@ -23,5 +26,17 @@ class MonsterCardCreate(MonsterCardBase):
 # Inherting from MonsterCardBase to avoid redundancy and ORMModel for ORM compatibility (json serialization)
 class MonsterCardOut(ORMModel,MonsterCardBase):
     id: int # response model inherits ORMModel ⇒ from_attributes=True
-
+    
+class MonsterCardUpdate(BaseModel):
+    name: Optional[str] = Field(None, min_length=1, max_length=255)
+    description: Optional[str] = None
+    primary_type: Optional[CardType] = None
+    secondary_type: Optional[CardType] = None
+    health: Optional[int] = Field(None, ge=0)
+    attack: Optional[int] = Field(None, ge=0)
+    defense: Optional[int] = Field(None, ge=0)
+    speed: Optional[int] = Field(None, ge=0)
+    team: Optional[TeamType] = None
+    rarity: Optional[RarityType] = None
+    alive: Optional[bool] = None
 
