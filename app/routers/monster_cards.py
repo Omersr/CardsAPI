@@ -42,6 +42,7 @@ def list_monster_cards(
     offset: int = 0,
     primary_type: Optional[CardType] = None,
     secondary_type: Optional[CardType] = None,
+    team: Optional[TeamType] = None,
     name_search: Optional[str] = None,
 ):
     return list_cards(

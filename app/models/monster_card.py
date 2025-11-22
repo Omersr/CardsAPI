@@ -4,7 +4,7 @@ from typing import Optional
 
 from sqlalchemy import BigInteger, CheckConstraint, Enum as PgEnum, Integer, String, Text, UniqueConstraint, Index, Boolean
 from sqlalchemy.orm import Mapped, mapped_column
-
+from .player import TeamType
 from app.database import Base
 
 class CardType(str, Enum):
@@ -28,15 +28,6 @@ class DisplayType(str, Enum):
     moonlight = "moonlight_card.html"
     twilight = "twilight_card.html"
 
-class TeamType(str, Enum):
-    bull = "bull"
-    owl = "owl"
-    swordfish = "swordfish"
-    neutral = "neutral"
-    @classmethod
-    def _missing_(cls, value):
-        # Whenever an invalid value is passed, return neutral
-        return cls.neutral
     
 class RarityType(str, Enum):
     normal = "normal"

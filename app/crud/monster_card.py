@@ -100,6 +100,7 @@ def list_cards(
     offset: int = 0,
     primary_type: Optional[CardType] = None,
     secondary_type: Optional[CardType] = None,
+    team: Optional[TeamType] = None,
     name_search: Optional[str] = None,
 ) -> Sequence[MonsterCard]:
     """
@@ -108,7 +109,8 @@ def list_cards(
     - name_search does ILIKE '%term%' on name
     """
     stmt = select(MonsterCard).order_by(MonsterCard.id).limit(limit).offset(offset)
-
+    if team is not None:
+        stmt = stmt.where(MonsterCard.team == team)
     if primary_type is not None:
         stmt = stmt.where(MonsterCard.primary_type == primary_type)
     if secondary_type is not None:
