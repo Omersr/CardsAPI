@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Card Template – Light Metal Minimal</title>
+
+  <style>
+    :root {
+      --card-width: 260px;
+      --card-height: 470px;
+  /* ARMORY / TREASURE METAL */
+  --card-bg: linear-gradient(145deg,
+    #2b3038 0%,   /* dark steel */
+    #3b414c 35%,  /* plate armor */
+    #505766 65%,  /* lighter steel highlight */
+    #2a3037 100%  /* shadowed edge */
+  );
+  --card-border: #c49a3a;  /* antique gold trim */
+
+      --title-font:'Segoe UI',Roboto,sans-serif;
+      --body-font:'Segoe UI',Roboto,sans-serif;
+
+      --art-width: 230px;
+      --art-height: 230px;
+    }
+
+    .card {
+      width: var(--card-width);
+      height: var(--card-height);
+
+      border: 2px solid var(--card-border);
+      border-radius: 12px;
+
+      background: var(--card-bg);
+      box-sizing: border-box;
+      padding: 14px 12px;
+
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      row-gap: 12px;
+      
+      overflow: hidden;
+      box-shadow:
+        inset 0 0 10px rgba(255,255,255,0.45),
+        inset 0 0 14px rgba(0,0,0,0.18);
+    }
+
+    /* Title */
+    .title {
+      font-family: var(--title-font);
+      font-size: 22px;
+      font-weight: 700;
+      text-align: center;
+      color: #f4e2a6; /* soft steel */
+      margin-top: 2px;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.7),
+    0 0 4px rgba(196,154,58,0.7);
+    }
+
+    /* Image centered */
+    .image-wrapper {
+      width: 100%;
+      display: block;
+      margin: 0 auto;
+      text-align: center;
+      justify-self: center;
+    }
+
+    .art-frame {
+      width: var(--art-width);
+      height: var(--art-height);
+
+      margin: 0 auto;      /* FULL CENTER */
+      border-radius: 8px;
+      overflow: hidden;
+      justify-self: center;
+      background-image: var(--art-src);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+
+      border: 2px solid #d0b057;
+      box-shadow:
+        0 3px 8px rgba(0,0,0,0.4),
+        inset 0 0 6px rgba(255,255,255,0.25);
+    }
+
+    /* Description centered + lighter metal */
+    .effect-text {
+      width: 88%;
+      margin: 0 auto;    /* FULL CENTER */
+      font-family: var(--body-font);
+      font-size: 14px;
+      line-height: 1.5;
+      justify-self: center;
+      background: rgba(255,255,255,0.55);
+      border-radius: 10px;
+
+      padding: 12px;
+      color: #f4e2a6;
+      
+      min-height: 130px;
+      overflow-y: auto;
+
+      box-shadow:
+        inset 0 0 10px rgba(0,0,0,0.18),
+        inset 0 0 6px rgba(255,255,255,0.45);
+    }
+
+    .effect-text p { margin: 0; }
+
+  </style>
+
+</head>
+<body>
+
+  <div class="card">
+    <div class="title">$name</div>
+
+    <!-- Image -->
+    <div class="image-wrapper">
+      <div class="art-frame" style="--art-src:url('$image_path')"></div>
+    </div>
+
+    <!-- Description -->
+    <div class="effect-text">
+      <p>$description</p>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Card Template – Teal Mystic Ability</title>
+
+  <style>
+    :root {
+      --card-width: 260px;
+      --card-height: 470px;
+
+      /* Ancient Teal Obsidian – mystic teal aura */
+      --card-bg: radial-gradient(circle at 50% 40%,
+        #baffa7 0%,   /* minty highlight */
+        #3ebf9f 25%,  /* teal jade */
+        #1b756b 55%,  /* ancient deep teal */
+        #103a37 100%  /* teal obsidian edge */
+      );
+      --card-border: #1c4d48; /* deep teal rim */
+
+      --title-font:'Segoe UI',Roboto,sans-serif;
+      --body-font:'Segoe UI',Roboto,sans-serif;
+
+      --art-width: 230px;
+      --art-height: 230px;
+    }
+
+    .card {
+      width: var(--card-width);
+      height: var(--card-height);
+
+      border: 2px solid var(--card-border);
+      border-radius: 12px;
+
+      background: var(--card-bg);
+      box-sizing: border-box;
+      padding: 14px 12px;
+
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      row-gap: 12px;
+
+      overflow: hidden;
+      box-shadow:
+        inset 0 0 10px rgba(255,255,255,0.20),
+        inset 0 0 14px rgba(0,0,0,0.35);
+    }
+
+    /* Title */
+    .title {
+      font-family: var(--title-font);
+      font-size: 22px;
+      font-weight: 700;
+      text-align: center;
+      color: #b5ffea; /* soft aquamarine glow */
+      margin-top: 2px;
+      text-shadow:
+        0 1px 2px rgba(0,0,0,0.7),
+        0 0 4px rgba(181,255,234,0.7); /* teal glow instead of gold */
+    }
+
+    /* Image centered */
+    .image-wrapper {
+      width: 100%;
+      display: block;
+      margin: 0 auto;
+      text-align: center;
+      justify-self: center;
+    }
+
+    .art-frame {
+      width: var(--art-width);
+      height: var(--art-height);
+
+      margin: 0 auto;      /* FULL CENTER */
+      border-radius: 8px;
+      overflow: hidden;
+      justify-self: center;
+
+      background-image: var(--art-src);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+
+      border: 2px solid #4bcfb4; /* mint/teal frame */
+      box-shadow:
+        0 3px 8px rgba(0,0,0,0.5),
+        inset 0 0 6px rgba(181,255,234,0.3);
+    }
+
+    /* Description – teal inset with mint border & aquamarine text */
+    .effect-text {
+      width: 88%;
+      margin: 0 auto;    /* FULL CENTER */
+      font-family: var(--body-font);
+      font-size: 14px;
+      line-height: 1.5;
+      justify-self: center;
+
+      background: rgba(235, 235, 235, 0.60); /* mystical teal panel */
+      border-radius: 10px;
+      border: 1px solid #4bcfb4;          /* mint glow edge */
+
+      padding: 12px;
+      color: #b5ffea;                      /* soft aquamarine text */
+
+      min-height: 130px;
+      overflow-y: auto;
+
+      box-shadow:
+        inset 0 0 10px rgba(0,0,0,0.35),
+        inset 0 0 6px rgba(181,255,234,0.25);
+    }
+
+    .effect-text p { margin: 0; }
+
+  </style>
+
+</head>
+<body>
+
+  <div class="card">
+    <div class="title">$name</div>
+
+    <!-- Image -->
+    <div class="image-wrapper">
+      <div class="art-frame" style="--art-src:url('$image_path')"></div>
+    </div>
+
+    <!-- Description -->
+    <div class="effect-text">
+      <p>$description</p>
+    </div>
+  </div>
+
+</body>
+</html>
