@@ -35,7 +35,6 @@ def create_player(db: Session, data: PlayerCreate) -> Player:
 
     player = Player(
         name=data.name,
-        team = data.team.lower(),
         monster_card_id = data.monster_card_id,
     )
     if get_card(db, player.monster_card_id) is None:
