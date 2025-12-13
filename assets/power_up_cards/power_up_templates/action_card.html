@@ -2,20 +2,28 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Card Template – Teal Mystic Ability</title>
+  <title>Card Template – Roman Elite Vivid Marble</title>
 
   <style>
     :root {
       --card-width: 260px;
       --card-height: 470px;
 
-      --card-bg: radial-gradient(circle at 50% 40%,
-        #baffa7 0%,
-        #3ebf9f 25%,
-        #1b756b 55%,
-        #103a37 100%
+      /* VIVID SUNLIT MARBLE */
+      --card-bg: radial-gradient(circle at 35% 25%,
+        #ffffff 0%,
+        #f6f2ea 28%,
+        #ece6dc 55%,
+        #ded6cb 75%,
+        #faf8f4 100%
       );
-      --card-border: #1c4d48;
+
+      /* ROMAN RED PALETTE (SINGLE SOURCE OF TRUTH) */
+      --roman-red-light: #b86a6a;
+      --roman-red: #a13f3f;
+      --roman-red-dark: #8e3333;
+
+      --card-border: var(--roman-red);
 
       --title-font:'Segoe UI',Roboto,sans-serif;
       --body-font:'Segoe UI',Roboto,sans-serif;
@@ -23,7 +31,6 @@
       --art-width: 230px;
     }
 
-    /* clean page */
     body {
       margin: 0;
       background: none;
@@ -36,8 +43,10 @@
     .card {
       width: var(--card-width);
       height: var(--card-height);
+
       border: 2px solid var(--card-border);
-      border-radius: 12px;
+      border-radius: 14px;
+
       background: var(--card-bg);
       box-sizing: border-box;
       padding: 14px 12px;
@@ -47,21 +56,27 @@
       row-gap: 12px;
 
       overflow: hidden;
+
       box-shadow:
-        inset 0 0 10px rgba(255,255,255,0.20),
-        inset 0 0 14px rgba(0,0,0,0.35);
+        inset 0 0 22px rgba(255,255,255,0.85),
+        inset 0 0 14px rgba(0,0,0,0.12),
+        0 8px 18px rgba(0,0,0,0.28);
     }
 
+    /* TITLE – SENATORIAL AUTHORITY */
     .title {
       font-family: var(--title-font);
       font-size: 22px;
-      font-weight: 700;
+      font-weight: 800;
       text-align: center;
-      color: #b5ffea;
+
+      color: var(--roman-red-dark);
+      letter-spacing: 0.6px;
       margin-top: 2px;
+
       text-shadow:
-        0 1px 2px rgba(0,0,0,0.7),
-        0 0 4px rgba(181,255,234,0.7);
+        0 1px 0 #ffffff,
+        0 3px 4px rgba(0,0,0,0.3);
     }
 
     .image-wrapper {
@@ -72,52 +87,57 @@
       justify-self: center;
     }
 
+    /* ART FRAME – SAME RED AS CARD BORDER */
     .art-frame {
       width: var(--art-width);
-      aspect-ratio: 4 / 3; /* landscape ratio – fixes cropping */
+      aspect-ratio: 4 / 3;
       margin: 0 auto;
-      border-radius: 8px;
+      border-radius: 10px;
       overflow: hidden;
-      justify-self: center;
 
       background-image: var(--art-src);
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
 
-      border: 2px solid #4bcfb4;
+      border: 2px solid var(--roman-red);
+
       box-shadow:
-        0 3px 8px rgba(0,0,0,0.5),
-        inset 0 0 6px rgba(181,255,234,0.3);
+        0 4px 10px rgba(0,0,0,0.35),
+        inset 0 0 10px rgba(255,255,255,0.6);
     }
 
-    /* ✅ description box (restored) */
+    /* DESCRIPTION – PATRICIAN SILK PANEL */
     .effect-text {
       width: 88%;
       margin: 0 auto;
+
       font-family: var(--body-font);
       font-size: 14px;
-      line-height: 1.5;
-      justify-self: center;
+      line-height: 1.55;
 
-      background: rgba(235, 235, 235, 0.60);
-      border-radius: 10px;
-      border: 1px solid #4bcfb4;
+      background: linear-gradient(145deg,
+        #b86a6a 0%,
+        #a13f3f 45%,
+        #8e3333 100%
+      );
 
+      border-radius: 12px;
       padding: 12px;
-      color: #b5ffea;
+
+      color: #fdfdfb;
 
       min-height: 130px;
       overflow-y: auto;
 
       box-shadow:
-        inset 0 0 10px rgba(0,0,0,0.35),
-        inset 0 0 6px rgba(181,255,234,0.25);
+        inset 0 0 12px rgba(0,0,0,0.28),
+        inset 0 0 6px rgba(255,255,255,0.18),
+        0 3px 6px rgba(0,0,0,0.25);
     }
 
     .effect-text p { margin: 0; }
   </style>
-
 </head>
 
 <body>

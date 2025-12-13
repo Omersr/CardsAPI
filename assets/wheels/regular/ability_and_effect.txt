@@ -1,0 +1,4 @@
+None: 3
+Ability: 2
+Effect: 2
+Ability and Effect: 1
