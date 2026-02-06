@@ -9,7 +9,7 @@ from app.database import Base
 
 class CardType(str, Enum):
     arms = "arms"
-    dark = "dark"
+    void = "void"
     earth = "earth"
     fire = "fire"
     frost = "frost"
@@ -21,6 +21,7 @@ class CardType(str, Enum):
     water = "water"
     wind = "wind"
     plant = "plant"
+    cosmic = "cosmic"
 
 class DisplayType(str, Enum):
     normal = "normal_card.html"
