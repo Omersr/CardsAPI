@@ -1,13 +1,8 @@
 from __future__ import annotations
-
 from typing import List, Optional, Annotated, Dict, Any
-
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
-from pydantic import BaseModel, Field
 from app.deps import get_db
-
-from app.database import SessionLocal
 from app.models.monster_card import *
 from app.schemas.monster_card import MonsterCardCreate, MonsterCardOut, MonsterCardUpdate
 from app.crud.monster_card import *

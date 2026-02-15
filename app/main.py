@@ -1,12 +1,15 @@
-from fastapi import FastAPI, Depends
-from sqlalchemy.orm import Session
-from sqlalchemy import inspect
+from contextlib import asynccontextmanager
+from fastapi import FastAPI
 from app.database import engine, Base 
 from app.routers import monster_cards  # <-- import the router module
 from app.routers import player
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
-import os
+import app.models.type_effectiveness # <- need this for now to create the table, when we will create the routes this can go
+import logging
+logger = logging.getLogger("uvicorn.error")
+
+
 
 # Mounting assets directory to serve static files
 app = FastAPI(title="Cards App")
@@ -19,15 +22,14 @@ app.mount(
 )
 
 # We didn't do it for database because this executes when the app starts. We want to create database before that.
-@app.on_event("startup")
-def on_startup():
-    # Create tables if they don’t exist (dev convenience; later we’ll switch to Alembic).
-    inspector = inspect(engine)
-    if "monster_cards" not in inspector.get_table_names() or "players" not in inspector.get_table_names():
-        Base.metadata.create_all(bind=engine)
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info("Starting up the application...")
+    Base.metadata.create_all(bind=engine)
+    yield
+    logger.info("Shutting down...")
 
-
-
+app = FastAPI(title="Cards App", lifespan=lifespan)
 app.include_router(monster_cards.router)
 app.include_router(player.router)
 
