@@ -4,26 +4,12 @@ from typing import List, Optional, Annotated, Dict, Any
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
-from pydantic import BaseModel, Field
 from app.deps import get_db
-from app.database import SessionLocal
 from app.models.player import *
 from app.schemas.player import *
 from app.crud.player import *
-from fastapi.responses import HTMLResponse
-
 router = APIRouter(prefix="/player", tags=["player"])
-
-
-
 DbSession = Annotated[Session, Depends(get_db)]
-
-
-# --- Update schema (all fields optional for PATCH) ---
-
-
-
-# --- Endpoints ---
 
 @router.post("/", response_model=PlayerOut, status_code=status.HTTP_201_CREATED)
 def create_player_route(payload: PlayerCreate, db: DbSession):

@@ -1,6 +1,7 @@
 # app/crud/monster_card.py
 from __future__ import annotations
 
+from ast import Tuple
 from typing import Optional, Sequence, Any, Dict
 
 from string import Template
@@ -9,9 +10,9 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
+from app.models.type_effectiveness import TypeEffectiveness
 
-
-from app.models.monster_card import MonsterCard, CardType, DisplayType, TeamType, RarityType
+from app.models.monster_card import MonsterCard, CardType, TeamType, RarityType
 from app.schemas.monster_card import MonsterCardCreate
 from app.config import *
 
@@ -234,4 +235,32 @@ def display_monster_card(db: Session, card_id: int) -> str:
     )
     return output_html  # Placeholder for actual HTML rendering logic
 
+
+# Probably should be a service-level function, but putting here for lazyness
+
+def get_damage_multipliers(first_monster_card: MonsterCard, second_monster_card: MonsterCard) -> Tuple[float,float]:
+    """
+    Calculates the damage multipliers for two monster cards based on their types and the type effectiveness rules.
+    Returns a tuple of (first_card_multiplier, second_card_multiplier).
+    """
+    first_multiplier = 1
+    second_multiplier = 1
+
+    # Check first card's primary and secondary types against second card's types
+    for attacker_type in [first_monster_card.primary_type, first_monster_card.secondary_type]:
+        for defender_type in [second_monster_card.primary_type, second_monster_card.secondary_type]:
+            if TypeEffectiveness.is_effective(attacker_type, defender_type):
+                first_multiplier *= 2  # Example: double damage if effective
+            else:
+                first_multiplier *= 0.5  # Example: half damage if not effective
+
+    # Check second card's primary and secondary types against first card's types
+    for attacker_type in [second_monster_card.primary_type, second_monster_card.secondary_type]:
+        for defender_type in [first_monster_card.primary_type, first_monster_card.secondary_type]:
+            if TypeEffectiveness.is_effective(attacker_type, defender_type):
+                second_multiplier *= 2  # Example: double damage if effective
+            else:
+                second_multiplier *= 0.5  # Example: half damage if not effective
+
+    return first_multiplier, second_multiplier
     

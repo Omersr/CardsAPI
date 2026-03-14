@@ -7,19 +7,8 @@ from app.models.monster_card import *
 from app.schemas.monster_card import MonsterCardCreate, MonsterCardOut, MonsterCardUpdate
 from app.crud.monster_card import *
 from fastapi.responses import HTMLResponse
-
 router = APIRouter(prefix="/monster-cards", tags=["monster-cards"])
-
-
-
 DbSession = Annotated[Session, Depends(get_db)]
-
-
-# --- Update schema (all fields optional for PATCH) ---
-
-
-
-# --- Endpoints ---
 
 @router.post("/", response_model=MonsterCardOut, status_code=status.HTTP_201_CREATED)
 def create_monster_card(payload: MonsterCardCreate, db: DbSession):
@@ -28,8 +17,7 @@ def create_monster_card(payload: MonsterCardCreate, db: DbSession):
     except DuplicateNameError as e:
         # 409 Conflict for unique violation
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
-
-
+    
 @router.get("/", response_model=List[MonsterCardOut])
 def list_monster_cards(
     db: DbSession,

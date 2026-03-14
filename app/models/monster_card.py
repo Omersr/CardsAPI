@@ -42,42 +42,20 @@ class RarityType(str, Enum):
 
 class MonsterCard(Base):
     __tablename__ = "monster_cards"
-
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     # name must be unique (interpreting your “string identity” as unique)
     # Also adding an index for faster lookups in index = true
     name: Mapped[str] = mapped_column(String(255), nullable=False, index=True, unique=True)
-
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-
-    primary_type: Mapped[CardType] = mapped_column(
-        PgEnum(CardType, name="card_type_enum", create_type=True, native_enum=True),
-        nullable=False,
-        index=True,
-    )
-    secondary_type: Mapped[Optional[CardType]] = mapped_column(
-        PgEnum(CardType, name="card_type_enum", create_type=False, native_enum=True),
-        nullable=True,
-        index=True,
-    )
-    team: Mapped[Optional[TeamType]] = mapped_column(
-        PgEnum(TeamType, name="team_type_enum", create_type=False, native_enum=True),
-        nullable=True,
-        default=TeamType.neutral,
-        index=True,
-    )
-    rarity: Mapped[Optional[RarityType]] = mapped_column(
-        PgEnum(RarityType, name="rarity_type_enum", create_type=False, native_enum=True),
-        nullable=True,
-        default=RarityType.normal,
-    )
-
+    primary_type: Mapped[CardType] = mapped_column(PgEnum(CardType, name="card_type_enum", create_type=True, native_enum=True), nullable=False, index=True,)
+    secondary_type: Mapped[Optional[CardType]] = mapped_column(PgEnum(CardType, name="card_type_enum", create_type=False, native_enum=True), nullable=True, index=True)
+    team: Mapped[Optional[TeamType]] = mapped_column(PgEnum(TeamType, name="team_type_enum", create_type=False, native_enum=True), nullable=True, default=TeamType.neutral,index=True)
+    rarity: Mapped[Optional[RarityType]] = mapped_column(PgEnum(RarityType, name="rarity_type_enum", create_type=False, native_enum=True), nullable=True, default=RarityType.normal)
     health: Mapped[int] = mapped_column(Integer, nullable=False)
     attack: Mapped[int] = mapped_column(Integer, nullable=False)
     defense: Mapped[int] = mapped_column(Integer, nullable=False)
     speed: Mapped[int] = mapped_column(Integer, nullable=False)
     alive: Mapped[bool] = mapped_column(Boolean,nullable=True,default=True)
-
     __table_args__ = (
         UniqueConstraint("name", name="uq_monster_cards_name"),
         # Basic non-negative sanity checks (we’ll add richer validation in API later if you want)
