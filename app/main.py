@@ -6,8 +6,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from app.database import engine, Base
-from app.routers import monster_cards
-from app.routers import player
+from app.routers import monster_cards, player, action_cards, item_card
 import app.models.type_effectiveness  # needed for table creation for now
 from fastapi import FastAPI, Request
 from app.database import SessionLocal
@@ -51,3 +50,5 @@ app.mount(
 
 app.include_router(monster_cards.router)
 app.include_router(player.router)
+app.include_router(action_cards.router)
+app.include_router(item_card.router)
