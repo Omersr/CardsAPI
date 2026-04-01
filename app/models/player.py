@@ -7,21 +7,12 @@ from fastapi import HTTPException
 from sqlalchemy import BigInteger, Enum as PgEnum, ForeignKey, String, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Mapped, Session, mapped_column
-
+from .model_enums import TeamType
 from app.database import Base
 from app.schemas.player import PlayerCreate
 from app.models.monster_card import MonsterCard
 
 
-class TeamType(str, Enum):
-    bull = "bull"
-    owl = "owl"
-    swordfish = "swordfish"
-    neutral = "neutral"
-
-    @classmethod
-    def _missing_(cls, value):
-        return cls.neutral
 
 
 class Player(Base):

@@ -6,7 +6,7 @@ from app.deps import get_db
 from app.models.monster_card import *
 from app.schemas.monster_card import MonsterCardCreate, MonsterCardOut, MonsterCardUpdate
 from fastapi.responses import HTMLResponse
-from exceptions import *
+from app.exceptions import *
 router = APIRouter(prefix="/monster-cards", tags=["monster-cards"])
 DbSession = Annotated[Session, Depends(get_db)]
 

@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from app.deps import get_db
 from app.models.player import *
 from app.schemas.player import *
-from exceptions import *
+from app.exceptions import *
 router = APIRouter(prefix="/player", tags=["player"])
 DbSession = Annotated[Session, Depends(get_db)]
 

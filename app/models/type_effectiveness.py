@@ -1,10 +1,11 @@
 
 from sqlalchemy import Enum as PgEnum, Boolean
 from sqlalchemy.orm import Mapped, mapped_column
-from .monster_card import CardType
+from .model_enums import CardType
 from app.database import Base
 from sqlalchemy import select
-from deps import get_db
+from app.deps import get_db
+
 class TypeEffectiveness(Base):
     __tablename__ = "type_effectiveness"
     attacker_type: Mapped[CardType] = mapped_column(PgEnum(CardType, name="card_type_enum", native_enum=True),primary_key=True)

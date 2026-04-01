@@ -1,6 +1,4 @@
 from __future__ import annotations
-
-from enum import Enum
 from pathlib import Path
 from string import Template
 from typing import Optional, Any
@@ -21,8 +19,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Mapped, Session, mapped_column
-
-from .player import TeamType
+from .model_enums import CardType, RarityType, TeamType
 from app.config import (
     HTML_FORMATS_DIR,
     MONSTER_CARD_IMAGES_DIR,
@@ -32,42 +29,12 @@ from app.config import (
 )
 from app.database import Base
 from app.models.type_effectiveness import TypeEffectiveness
-from schemas.monster_card import MonsterCardCreate
+from app.schemas.monster_card import MonsterCardCreate
 
 
-class CardType(str, Enum):
-    arms = "arms"
-    void = "void"
-    earth = "earth"
-    fire = "fire"
-    frost = "frost"
-    light = "light"
-    lightning = "lightning"
-    magic = "magic"
-    ore = "ore"
-    poison = "poison"
-    water = "water"
-    wind = "wind"
-    plant = "plant"
-    cosmic = "cosmic"
 
 
-class DisplayType(str, Enum):
-    normal = "normal_card.html"
-    sunlight = "sunlight_card.html"
-    moonlight = "moonlight_card.html"
-    twilight = "twilight_card.html"
 
-
-class RarityType(str, Enum):
-    normal = "normal"
-    sunlight = "sunlight"
-    moonlight = "moonlight"
-    twilight = "twilight"
-
-    @classmethod
-    def _missing_(cls, value):
-        return cls.normal
 
 
 class MonsterCard(Base):
