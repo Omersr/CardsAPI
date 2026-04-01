@@ -18,7 +18,7 @@ from sqlalchemy import (
     select,
 )
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Mapped, Session, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column
 from .model_enums import CardType, RarityType, TeamType
 from app.config import (
     HTML_FORMATS_DIR,
@@ -30,11 +30,7 @@ from app.config import (
 from app.database import Base
 from app.models.type_effectiveness import TypeEffectiveness
 from app.schemas.monster_card import MonsterCardCreate
-
-
-
-
-
+from app.database_context import get_current_db
 
 
 class MonsterCard(Base):
@@ -116,7 +112,8 @@ class MonsterCard(Base):
             raise HTTPException(status_code=400, detail=f"Could not process image {image_path}: {e}")
 
     @staticmethod
-    def create_card(db: Session, data: MonsterCardCreate) -> "MonsterCard":
+    def create_card(data: MonsterCardCreate) -> "MonsterCard":
+        db = get_current_db()
         secondary = data.secondary_type or data.primary_type
 
         card = MonsterCard(
@@ -144,18 +141,19 @@ class MonsterCard(Base):
         return card
 
     @staticmethod
-    def get_card(db: Session, card_id: int) -> Optional["MonsterCard"]:
+    def get_card(card_id: int) -> Optional["MonsterCard"]:
+        db = get_current_db()
         stmt = select(MonsterCard).where(MonsterCard.id == card_id)
         return db.execute(stmt).scalar_one_or_none()
 
     @staticmethod
-    def get_card_by_name(db: Session, name: str) -> Optional["MonsterCard"]:
+    def get_card_by_name(name: str) -> Optional["MonsterCard"]:
+        db = get_current_db()
         stmt = select(MonsterCard).where(MonsterCard.name == name)
         return db.execute(stmt).scalar_one_or_none()
 
     @staticmethod
     def list_cards(
-        db: Session,
         *,
         limit: int = 20,
         offset: int = 0,
@@ -164,6 +162,7 @@ class MonsterCard(Base):
         team: Optional[TeamType] = None,
         name_search: Optional[str] = None,
     ) -> list["MonsterCard"]:
+        db = get_current_db()
         stmt = select(MonsterCard).order_by(MonsterCard.id).limit(limit).offset(offset)
 
         if team is not None:
@@ -178,8 +177,9 @@ class MonsterCard(Base):
         return list(db.execute(stmt).scalars().all())
 
     @staticmethod
-    def update_card(db: Session, card_id: int, updates: dict[str, Any]) -> "MonsterCard":
-        card = MonsterCard.get_card(db, card_id)
+    def update_card(card_id: int, updates: dict[str, Any]) -> "MonsterCard":
+        db = get_current_db()
+        card = MonsterCard.get_card(card_id)
         if card is None:
             raise HTTPException(status_code=404, detail=f"Card id {card_id} not found")
 
@@ -201,8 +201,9 @@ class MonsterCard(Base):
         return card
 
     @staticmethod
-    def delete_card(db: Session, card_id: int) -> None:
-        card = MonsterCard.get_card(db, card_id)
+    def delete_card(card_id: int) -> None:
+        db = get_current_db()
+        card = MonsterCard.get_card(card_id)
         if card is None:
             raise HTTPException(status_code=404, detail=f"Card id {card_id} not found")
 
@@ -210,8 +211,8 @@ class MonsterCard(Base):
         db.commit()
 
     @staticmethod
-    def display_monster_card(db: Session, card_id: int) -> str:
-        card = MonsterCard.get_card(db, card_id)
+    def display_monster_card(card_id: int) -> str:
+        card = MonsterCard.get_card(card_id)
         if card is None:
             raise HTTPException(status_code=404, detail=f"Card id {card_id} not found")
 
@@ -227,10 +228,7 @@ class MonsterCard(Base):
         primary_type_image_path = f"{PUBLIC_TYPE_ICONS_URL}/{card.primary_type.value}_icon.png"
         secondary_type_image_path = f"{PUBLIC_TYPE_ICONS_URL}/{card.secondary_type.value}_icon.png"
 
-        if card.team is None:
-            team_value = TeamType.neutral.value
-        else:
-            team_value = card.team.value
+        team_value = card.team.value if card.team is not None else TeamType.neutral.value
 
         team_icon_path = f"{PUBLIC_TEAM_ICONS_URL}/{team_value}_team_banner.png"
         decoration_left = f"{PUBLIC_TEAM_ICONS_URL}/banner_decoration_left.png"
@@ -259,7 +257,10 @@ class MonsterCard(Base):
         return output_html
 
     @staticmethod
-    def get_damage_multipliers(first_monster_card: "MonsterCard", second_monster_card: "MonsterCard") -> tuple[float, float]:
+    def get_damage_multipliers(
+        first_monster_card: "MonsterCard",
+        second_monster_card: "MonsterCard",
+    ) -> tuple[float, float]:
         first_multiplier = 1.0
         second_multiplier = 1.0
 

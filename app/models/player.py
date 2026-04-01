@@ -1,18 +1,17 @@
 from __future__ import annotations
 
-from enum import Enum
 from typing import Optional, Any
 
 from fastapi import HTTPException
 from sqlalchemy import BigInteger, Enum as PgEnum, ForeignKey, String, select
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Mapped, Session, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column
+
 from .model_enums import TeamType
 from app.database import Base
 from app.schemas.player import PlayerCreate
 from app.models.monster_card import MonsterCard
-
-
+from app.database_context import get_current_db
 
 
 class Player(Base):
@@ -38,7 +37,9 @@ class Player(Base):
     }
 
     @staticmethod
-    def create_player(db: Session, data: PlayerCreate) -> "Player":
+    def create_player(data: PlayerCreate) -> "Player":
+        db = get_current_db()
+
         player = Player(
             name=data.name,
             team=data.team if hasattr(data, "team") else TeamType.neutral,
@@ -46,7 +47,7 @@ class Player(Base):
         )
 
         if player.monster_card_id is not None:
-            card = MonsterCard.get_card(db, player.monster_card_id)
+            card = MonsterCard.get_card(player.monster_card_id)
             if card is None:
                 raise HTTPException(
                     status_code=400,
@@ -64,24 +65,26 @@ class Player(Base):
         return player
 
     @staticmethod
-    def get_player(db: Session, player_id: int) -> Optional["Player"]:
+    def get_player(player_id: int) -> Optional["Player"]:
+        db = get_current_db()
         stmt = select(Player).where(Player.id == player_id)
         return db.execute(stmt).scalar_one_or_none()
 
     @staticmethod
-    def get_player_by_name(db: Session, name: str) -> Optional["Player"]:
+    def get_player_by_name(name: str) -> Optional["Player"]:
+        db = get_current_db()
         stmt = select(Player).where(Player.name == name)
         return db.execute(stmt).scalar_one_or_none()
 
     @staticmethod
     def list_players(
-        db: Session,
         *,
         limit: int = 20,
         offset: int = 0,
         team: Optional[TeamType] = None,
         name_search: Optional[str] = None,
     ) -> list["Player"]:
+        db = get_current_db()
         stmt = select(Player).order_by(Player.id).limit(limit).offset(offset)
 
         if team is not None:
@@ -93,15 +96,16 @@ class Player(Base):
         return list(db.execute(stmt).scalars().all())
 
     @staticmethod
-    def update_player(db: Session, player_id: int, updates: dict[str, Any]) -> "Player":
-        player = Player.get_player(db, player_id)
+    def update_player(player_id: int, updates: dict[str, Any]) -> "Player":
+        db = get_current_db()
+        player = Player.get_player(player_id)
         if player is None:
             raise HTTPException(status_code=404, detail=f"player id {player_id} not found")
 
         clean = {k: v for k, v in updates.items() if k in Player._UPDATABLE_FIELDS}
 
         if "monster_card_id" in clean and clean["monster_card_id"] is not None:
-            card = MonsterCard.get_card(db, clean["monster_card_id"])
+            card = MonsterCard.get_card(clean["monster_card_id"])
             if card is None:
                 raise HTTPException(
                     status_code=400,
@@ -121,8 +125,9 @@ class Player(Base):
         return player
 
     @staticmethod
-    def delete_player(db: Session, player_id: int) -> None:
-        player = Player.get_player(db, player_id)
+    def delete_player(player_id: int) -> None:
+        db = get_current_db()
+        player = Player.get_player(player_id)
         if player is None:
             raise HTTPException(status_code=404, detail=f"player id {player_id} not found")
 

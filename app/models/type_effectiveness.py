@@ -4,7 +4,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from .model_enums import CardType
 from app.database import Base
 from sqlalchemy import select
-from app.deps import get_db
+from app.database_context import get_current_db
 
 class TypeEffectiveness(Base):
     __tablename__ = "type_effectiveness"
@@ -14,12 +14,11 @@ class TypeEffectiveness(Base):
     
     @staticmethod
     def is_effective(attacker_type: CardType, defender_type: CardType) -> bool:
-        db = get_db()
-        with db as session:
-            result = session.execute(
-                select(TypeEffectiveness.effective).where(
-                    TypeEffectiveness.attacker_type == attacker_type,
-                    TypeEffectiveness.defender_type == defender_type
-                )
-            ).scalar_one_or_none()        
+        db = get_current_db()
+        result = db.execute(
+            select(TypeEffectiveness.effective).where(
+                TypeEffectiveness.attacker_type == attacker_type,
+                TypeEffectiveness.defender_type == defender_type
+            )
+        ).scalar_one_or_none()     
         return result if result is not None else False
