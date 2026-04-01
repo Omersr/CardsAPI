@@ -1,8 +1,6 @@
 from __future__ import annotations
-from typing import List, Optional, Annotated, Dict, Any
-from fastapi import APIRouter, Depends, HTTPException, Response, status
-from sqlalchemy.orm import Session
-from app.deps import get_db
+from typing import List, Optional, Dict, Any
+from fastapi import APIRouter, HTTPException, Response, status
 from app.models.monster_card import *
 from app.schemas.monster_card import MonsterCardCreate, MonsterCardOut, MonsterCardUpdate
 from fastapi.responses import HTMLResponse
