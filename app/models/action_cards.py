@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from string import Template
 from typing import List, Optional, Any
 
 from fastapi import HTTPException, status
@@ -7,8 +8,12 @@ from sqlalchemy import BigInteger, Boolean, ForeignKey, String, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Mapped, mapped_column
 
+from string import Template
+
+from app.config import ACTION_CARD_IMAGES_DIR, HTML_ACTION_CARD_TEMPLATE, PUBLIC_ACTION_CARD_IMAGES_URL
 from app.database import Base
 from app.database_context import get_current_db
+from app.services.cards_service import ensure_image_size
 
 
 class ActionCard(Base):
@@ -99,9 +104,35 @@ class ActionCard(Base):
             )
 
     @staticmethod
-    def delete(action_card_id: int) -> None:
-        db = get_current_db()
-        action_card = ActionCard.get_by_id(action_card_id)
+    def display_action_card(card_id: int) -> str:
+        card = ActionCard.get_by_id(card_id)
+        if card is None:
+            raise HTTPException(status_code=404, detail=f"Card id {card_id} not found")
 
-        db.delete(action_card)
+        raw_html = HTML_ACTION_CARD_TEMPLATE.read_text(encoding="utf-8")
+
+        # same filename logic (no spaces)
+        action_filename = f"{card.name.title()}.png"
+
+        # filesystem path (for Python / PIL)
+        full_image_path = ACTION_CARD_IMAGES_DIR / action_filename
+        ensure_image_size(full_image_path)
+
+        # public URL (for browser)
+        image_path = f"{PUBLIC_ACTION_CARD_IMAGES_URL}/{action_filename}"
+
+        template = Template(raw_html)
+        output_html = template.safe_substitute(
+            name=card.name,
+            description=card.description or "",
+            image_path=image_path,
+        )
+
+        return output_html
+    
+    @staticmethod
+    def delete(item_id: int) -> None:
+        db = get_current_db()
+        action = ActionCard.get_by_id(item_id)
+        db.delete(action)
         db.commit()

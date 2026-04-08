@@ -13,6 +13,7 @@ ASSETS_POWER_UP_DIR = ASSETS_DIR / "power_up_cards"
 # HTML templates on disk
 HTML_FORMATS_DIR = ASSETS_MONSTER_DIR / "card_templates"
 HTML_ITEM_CARD_TEMPLATE = ASSETS_POWER_UP_DIR / "power_up_templates" / "item_card.html"
+HTML_ACTION_CARD_TEMPLATE = ASSETS_POWER_UP_DIR / "power_up_templates" / "action_card.html"
 
 # Image directories on disk
 MONSTER_CARD_IMAGES_DIR = ASSETS_MONSTER_DIR / "monster_card_images"
@@ -28,3 +29,6 @@ PUBLIC_TEAM_ICONS_URL = f"{PUBLIC_ASSETS_BASE_URL}/team_icons"
 
 PUBLIC_POWERUP_CARDS_URL = f"{PUBLIC_ASSETS_BASE_URL}/power_up_cards"
 PUBLIC_ITEM_CARD_IMAGES_URL = f"{PUBLIC_POWERUP_CARDS_URL}/items_images"
+
+ACTION_CARD_IMAGES_DIR = ASSETS_POWER_UP_DIR / "action_images"
+PUBLIC_ACTION_CARD_IMAGES_URL = f"{PUBLIC_POWERUP_CARDS_URL}/action_images"

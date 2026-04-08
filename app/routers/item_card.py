@@ -50,7 +50,7 @@ def delete_item_card(item_card_id: int):
     return Response(status_code=status.HTTP_200_OK)
 
 @router.get("/display/{card_id:int}",response_class=HTMLResponse)
-def render_monster_card(card_id: int):
+def render_item_card(card_id: int):
     try:
         return ItemCard.display_item_card(card_id)
     except NotFoundError as e:

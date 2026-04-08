@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+from http.client import HTTPException
 from typing import List, Optional
 
 from fastapi import APIRouter, Response, status
+from fastapi.responses import HTMLResponse
 
+from app.exceptions import NotFoundError
 from app.models.action_cards import ActionCard
 from app.schemas.action_cards import ActionCardCreate, ActionCardOut, ActionCardUpdate
 
@@ -48,4 +51,11 @@ def update_action_card(action_card_id: int, payload: ActionCardUpdate):
 @router.delete("/{action_card_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_action_card(action_card_id: int):
     ActionCard.delete(action_card_id)
-    return Response(status_code=status.HTTP_204_NO_CONTENT)
+    return Response(status_code=status.HTTP_200_OK)
+
+@router.get("/display/{card_id:int}",response_class=HTMLResponse)
+def render_action_card(card_id: int):
+    try:
+        return ActionCard.display_action_card(card_id)
+    except NotFoundError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
