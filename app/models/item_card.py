@@ -2,16 +2,21 @@
 
 from __future__ import annotations
 
+from string import Template
 from typing import List
-
+from app.services.cards_service import ensure_image_size
 from sqlalchemy import BigInteger, Boolean, String, ForeignKey, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Mapped, mapped_column
 
 from fastapi import HTTPException, status
-
+from app.config import HTML_ITEM_CARD_TEMPLATE, PUBLIC_ITEM_CARD_IMAGES_URL, ITEM_CARD_IMAGES_DIR
 from app.database import Base
 from app.database_context import get_current_db
+        
+from string import Template
+from urllib.parse import quote
+from fastapi import HTTPException
 
 
 class ItemCard(Base):
@@ -106,3 +111,29 @@ class ItemCard(Base):
 
         db.delete(item)
         db.commit()
+
+
+    @staticmethod
+    def display_item_card(card_id: int) -> str:
+        card = ItemCard.get_by_id(card_id)
+        if card is None:
+            raise HTTPException(status_code=404, detail=f"Card id {card_id} not found")
+
+        raw_html = HTML_ITEM_CARD_TEMPLATE.read_text(encoding="utf-8")
+
+        item_filename = f"{card.name.title()}.png"
+
+        # real file path on disk for Python / PIL
+        full_image_path = ITEM_CARD_IMAGES_DIR / item_filename
+        ensure_image_size(full_image_path)
+
+        # public URL for browser / HTML
+        image_path = f"{PUBLIC_ITEM_CARD_IMAGES_URL}/{quote(item_filename)}"
+
+        template = Template(raw_html)
+        output_html = template.safe_substitute(
+            name=card.name,
+            description=card.description or "",
+            image_path=image_path,
+        )
+        return output_html

@@ -1,10 +1,8 @@
 from __future__ import annotations
-from pathlib import Path
 from string import Template
 from typing import Optional, Any
-
+from app.services.cards_service import ensure_image_size
 from fastapi import HTTPException
-from PIL import Image
 from sqlalchemy import (
     BigInteger,
     Boolean,
@@ -98,18 +96,7 @@ class MonsterCard(Base):
         RarityType.twilight: "twilight_card.html",
     }
 
-    @staticmethod
-    def _ensure_image_size(image_path: Path, target_size: tuple[int, int] = (230, 150)) -> None:
-        if not image_path.exists():
-            return
 
-        try:
-            with Image.open(image_path) as img:
-                if img.size != target_size:
-                    resized = img.resize(target_size, Image.Resampling.LANCZOS)
-                    resized.save(image_path)
-        except Exception as e:
-            raise HTTPException(status_code=400, detail=f"Could not process image {image_path}: {e}")
 
     @staticmethod
     def create_card(data: MonsterCardCreate) -> "MonsterCard":
@@ -222,7 +209,7 @@ class MonsterCard(Base):
         raw_html = html_display_path.read_text(encoding="utf-8")
 
         monster_filename = f"{card.name.capitalize().replace(' ', '_')}.png"
-        MonsterCard._ensure_image_size(MONSTER_CARD_IMAGES_DIR / monster_filename)
+        ensure_image_size(MONSTER_CARD_IMAGES_DIR / monster_filename)
 
         image_path = f"{PUBLIC_MONSTER_IMAGES_URL}/{monster_filename}"
         primary_type_image_path = f"{PUBLIC_TYPE_ICONS_URL}/{card.primary_type.value}_icon.png"
