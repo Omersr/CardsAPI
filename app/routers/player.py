@@ -1,23 +1,27 @@
 from __future__ import annotations
 
+import logging
 from typing import List, Optional, Annotated, Dict, Any
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, Response, status
 from sqlalchemy.orm import Session
+
 from app.deps import get_db
 from app.models.player import *
 from app.schemas.player import *
-from app.exceptions import *
+
 router = APIRouter(prefix="/player", tags=["player"])
+logger = logging.getLogger("uvicorn.error")
 DbSession = Annotated[Session, Depends(get_db)]
+
 
 @router.post("/", response_model=PlayerOut, status_code=status.HTTP_201_CREATED)
 def create_player_route(payload: PlayerCreate, db: DbSession):
     try:
         return Player.create_player(db, payload)
     except Exception as e:
-        # 409 Conflict for unique violation
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+        logger.error(f"Error creating Player: {str(e)}")
+        return Response(status_code=500, content=str(e))
 
 
 @router.get("/", response_model=List[PlayerOut])
@@ -28,44 +32,53 @@ def list_players_route(
     team: Optional[TeamType] = None,
     name_search: Optional[str] = None,
 ):
-    return Player.list_players(
-        db,
-        limit=limit,
-        offset=offset,
-        team=team,
-        name_search=name_search,
-    )
+    try:
+        return Player.list_players(
+            db,
+            limit=limit,
+            offset=offset,
+            team=team,
+            name_search=name_search,
+        )
+    except Exception as e:
+        logger.error(f"Error listing Players: {str(e)}")
+        return Response(status_code=500, content=str(e))
 
 
 @router.get("/{player_id:int}", response_model=PlayerOut)
 def get_player_route(player_id: int, db: DbSession):
-    player = Player.get_player(db, player_id)
-    if not player:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="player not found.")
-    return player
+    try:
+        player = Player.get_player(db, player_id)
+        if not player:
+            logger.error(f"Player with id {player_id} not found.")
+            return Response(status_code=404, content=f"Player with id {player_id} not found.")
+        return player
+    except Exception as e:
+        logger.error(f"Error retrieving Player with id {player_id}: {str(e)}")
+        return Response(status_code=500, content=str(e))
 
-
-    
 
 @router.get("/by-name/{name}", response_model=PlayerOut)
 def get_player_by_name_route(name: str, db: DbSession):
-    player = Player.get_player_by_name(db, name)
-    if not player:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="player not found.")
-    return player
-
-
+    try:
+        player = Player.get_player_by_name(db, name)
+        if not player:
+            logger.error(f"Player with name {name} not found.")
+            return Response(status_code=404, content=f"Player with name {name} not found.")
+        return player
+    except Exception as e:
+        logger.error(f"Error retrieving Player with name {name}: {str(e)}")
+        return Response(status_code=500, content=str(e))
 
 
 @router.patch("/{player_id:int}", response_model=PlayerOut)
 def patch_player_route(player_id: int, payload: PlayerUpdate, db: DbSession):
-    updates: Dict[str, Any] = payload.model_dump(exclude_unset=True)
     try:
+        updates: Dict[str, Any] = payload.model_dump(exclude_unset=True)
         return Player.update_player(db, player_id, updates)
-    except NotFoundError as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     except Exception as e:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+        logger.error(f"Error updating Player with id {player_id}: {str(e)}")
+        return Response(status_code=500, content=str(e))
 
 
 @router.delete("/{player_id:int}", status_code=status.HTTP_204_NO_CONTENT)
@@ -73,6 +86,6 @@ def remove_player_route(player_id: int, db: DbSession):
     try:
         Player.delete_player(db, player_id)
         return Response(status_code=status.HTTP_204_NO_CONTENT)
-    except NotFoundError as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
-
+    except Exception as e:
+        logger.error(f"Error deleting Player with id {player_id}: {str(e)}")
+        return Response(status_code=500, content=str(e))

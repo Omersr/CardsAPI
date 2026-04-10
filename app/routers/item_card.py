@@ -1,20 +1,25 @@
 from __future__ import annotations
 
-from http.client import HTTPException
+import logging
 from typing import List, Optional
 
 from fastapi import APIRouter, Response, status
+from fastapi.responses import HTMLResponse
 
-from app.exceptions import NotFoundError
 from app.models.item_card import ItemCard
 from app.schemas.item_card import ItemCardCreate, ItemCardOut, ItemCardUpdate
-from fastapi.responses import HTMLResponse
+
 router = APIRouter(prefix="/item-cards", tags=["item-cards"])
+logger = logging.getLogger("uvicorn.error")
 
 
 @router.post("/", response_model=ItemCardOut, status_code=status.HTTP_201_CREATED)
 def create_item_card(payload: ItemCardCreate):
-    return ItemCard.create(**payload.model_dump())
+    try:
+        return ItemCard.create(**payload.model_dump())
+    except Exception as e:
+        logger.error(f"Error creating ItemCard: {str(e)}")
+        return Response(status_code=500, content=str(e))
 
 
 @router.get("/", response_model=List[ItemCardOut])
@@ -22,36 +27,58 @@ def list_item_cards(
     used: Optional[bool] = None,
     monster_card_id: Optional[int] = None,
 ):
-    items = ItemCard.get_all()
+    try:
+        items = ItemCard.get_all()
 
-    if used is not None:
-        items = [item for item in items if item.used == used]
+        if used is not None:
+            items = [item for item in items if item.used == used]
 
-    if monster_card_id is not None:
-        items = [item for item in items if item.monster_card_id == monster_card_id]
+        if monster_card_id is not None:
+            items = [item for item in items if item.monster_card_id == monster_card_id]
 
-    return items
+        return items
+    except Exception as e:
+        logger.error(f"Error listing ItemCards: {str(e)}")
+        return Response(status_code=500, content=str(e))
 
 
 @router.get("/{item_card_id}", response_model=ItemCardOut)
 def get_item_card(item_card_id: int):
-    return ItemCard.get_by_id(item_card_id)
+    try:
+        item = ItemCard.get_by_id(item_card_id)
+        if not item:
+            logger.error(f"ItemCard with id {item_card_id} not found.")
+            return Response(status_code=404, content=f"ItemCard with id {item_card_id} not found.")
+        return item
+    except Exception as e:
+        logger.error(f"Error retrieving ItemCard with id {item_card_id}: {str(e)}")
+        return Response(status_code=500, content=str(e))
 
 
 @router.patch("/{item_card_id}", response_model=ItemCardOut)
 def update_item_card(item_card_id: int, payload: ItemCardUpdate):
-    update_data = payload.model_dump(exclude_unset=True)
-    return ItemCard.update(item_id=item_card_id, **update_data)
+    try:
+        update_data = payload.model_dump(exclude_unset=True)
+        return ItemCard.update(item_id=item_card_id, **update_data)
+    except Exception as e:
+        logger.error(f"Error updating ItemCard with id {item_card_id}: {str(e)}")
+        return Response(status_code=500, content=str(e))
 
 
 @router.delete("/{item_card_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_item_card(item_card_id: int):
-    ItemCard.delete(item_card_id)
-    return Response(status_code=status.HTTP_200_OK)
+    try:
+        ItemCard.delete(item_card_id)
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+    except Exception as e:
+        logger.error(f"Error deleting ItemCard with id {item_card_id}: {str(e)}")
+        return Response(status_code=500, content=str(e))
 
-@router.get("/display/{card_id:int}",response_class=HTMLResponse)
+
+@router.get("/display/{card_id:int}", response_class=HTMLResponse)
 def render_item_card(card_id: int):
     try:
         return ItemCard.display_item_card(card_id)
-    except NotFoundError as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    except Exception as e:
+        logger.error(f"Error rendering ItemCard with id {card_id}: {str(e)}")
+        return Response(status_code=500, content=str(e))
