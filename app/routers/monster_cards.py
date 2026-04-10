@@ -8,7 +8,8 @@ from fastapi.responses import HTMLResponse
 
 from app.models.monster_card import *
 from app.schemas.monster_card import MonsterCardCreate, MonsterCardOut, MonsterCardUpdate
-from app.services.battle_service import battle
+from app.services.battle_service import auto_battle
+from app.services.cards_service import display_monster_cards_possesions
 
 router = APIRouter(prefix="/monster-cards", tags=["monster-cards"])
 logger = logging.getLogger("uvicorn.error")
@@ -115,8 +116,21 @@ def monster_card_batte(payload: dict):
             logger.error("One or both cards not found.")
             return Response(status_code=404, content="One or both cards not found.")
 
-        winner_card = battle(card1, card2)
+        winner_card = auto_battle(card1, card2)
         return f"{winner_card.name} is the winner!"
     except Exception as e:
         logger.error(f"Error during MonsterCard battle: {str(e)}")
         return Response(status_code=500, content=str(e))
+
+@router.get("/display_possesion", response_class=HTMLResponse)
+def display_monster_cards_possesions_route(monster_card_ids: str):
+    try:
+        # "1,2,3" → [1,2,3]
+        ids = [int(x) for x in monster_card_ids.split(",")]
+
+        return display_monster_cards_possesions(ids)
+
+    except Exception as e:
+        logger.error(f"Error during display_possesion: {str(e)}")
+        return Response(status_code=500, content=str(e))
+    

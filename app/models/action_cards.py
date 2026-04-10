@@ -13,7 +13,9 @@ from string import Template
 from app.config import ACTION_CARD_IMAGES_DIR, HTML_ACTION_CARD_TEMPLATE, PUBLIC_ACTION_CARD_IMAGES_URL
 from app.database import Base
 from app.database_context import get_current_db
-from app.services.cards_service import ensure_image_size
+from app.utils.image_utils import ensure_image_size
+import logging
+logger = logging.getLogger("uvicorn.error")
 
 
 class ActionCard(Base):
@@ -41,6 +43,16 @@ class ActionCard(Base):
                 status_code=status.HTTP_409_CONFLICT,
                 detail="ActionCard with this name already exists."
             )
+
+    @staticmethod
+    def get_all_by_monster_card_id(monster_card_id: int) -> List["ActionCard"]:
+        db = get_current_db()
+        stmt = select(ActionCard).where(ActionCard.monster_card_id == monster_card_id)
+        action_cards = list(db.execute(stmt).scalars().all())
+        if len(action_cards) == 0:
+            logger.info(f"No ActionCard found for monster_card_id {monster_card_id}")
+        return action_cards
+
 
     @staticmethod
     def get_by_id(action_card_id: int) -> "ActionCard":

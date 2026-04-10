@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from string import Template
 from typing import List
-from app.services.cards_service import ensure_image_size
+from app.utils.image_utils import ensure_image_size
 from sqlalchemy import BigInteger, Boolean, String, ForeignKey, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Mapped, mapped_column
@@ -13,10 +13,11 @@ from fastapi import HTTPException, status
 from app.config import HTML_ITEM_CARD_TEMPLATE, PUBLIC_ITEM_CARD_IMAGES_URL, ITEM_CARD_IMAGES_DIR
 from app.database import Base
 from app.database_context import get_current_db
-        
 from string import Template
 from urllib.parse import quote
 from fastapi import HTTPException
+import logging
+logger = logging.getLogger("uvicorn.error")
 
 
 class ItemCard(Base):
@@ -75,6 +76,15 @@ class ItemCard(Base):
 
         stmt = select(ItemCard)
         return list(db.execute(stmt).scalars().all())
+    
+    @staticmethod
+    def get_all_by_monster_card_id(monster_card_id: int) -> List["ItemCard"]:
+        db = get_current_db()
+        stmt = select(ItemCard).where(ItemCard.monster_card_id == monster_card_id)
+        item_cards = list(db.execute(stmt).scalars().all())
+        if len(item_cards) == 0:
+            logger.info(f"No ItemCards found for monster_card_id {monster_card_id}")
+        return item_cards
 
     # -------------------------
     # UPDATE

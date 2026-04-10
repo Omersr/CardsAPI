@@ -1,7 +1,7 @@
 from __future__ import annotations
 from string import Template
 from typing import Optional, Any
-from app.services.cards_service import ensure_image_size
+from app.utils.image_utils import ensure_image_size
 from fastapi import HTTPException
 from sqlalchemy import (
     BigInteger,
@@ -29,6 +29,7 @@ from app.database import Base
 from app.models.type_effectiveness import TypeEffectiveness
 from app.schemas.monster_card import MonsterCardCreate
 from app.database_context import get_current_db
+from sqlalchemy import select
 
 
 class MonsterCard(Base):
