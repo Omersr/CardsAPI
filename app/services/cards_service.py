@@ -9,9 +9,6 @@ from html import escape
 from app.models.monster_card import MonsterCard
 from sqlalchemy import select
 
-
-
-
 def get_all_possessions(monster_card_id):
     action_cards = ActionCard.get_all_by_monster_card_id(monster_card_id)
     item_cards = ItemCard.get_all_by_monster_card_id(monster_card_id)

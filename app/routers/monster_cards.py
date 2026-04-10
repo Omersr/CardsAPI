@@ -5,11 +5,12 @@ from typing import List, Optional, Dict, Any
 
 from fastapi import APIRouter, Response, status
 from fastapi.responses import HTMLResponse
-
 from app.models.monster_card import *
+from app.models.model_enums import DownloadType
 from app.schemas.monster_card import MonsterCardCreate, MonsterCardOut, MonsterCardUpdate
 from app.services.battle_service import auto_battle
 from app.services.cards_service import display_monster_cards_possesions
+from app.utils.image_utils import download_card_image
 
 router = APIRouter(prefix="/monster-cards", tags=["monster-cards"])
 logger = logging.getLogger("uvicorn.error")
@@ -100,6 +101,16 @@ def render_monster_card(card_id: int):
         logger.error(f"Error rendering MonsterCard with id {card_id}: {str(e)}")
         return Response(status_code=500, content=str(e))
 
+@router.get("/download/{card_id:int}", response_class=HTMLResponse)
+def download_monster_card(card_id: int):
+    try:
+        if not MonsterCard.get_card(card_id):
+            logger.error(f"MonsterCard with id {card_id} not found for download.")
+            return Response(status_code=404, content=f"MonsterCard with id {card_id} not found.")
+        return download_card_image(card_id, DownloadType.monster_card.value)
+    except Exception as e:
+        logger.error(f"Error rendering MonsterCard with id {card_id}: {str(e)}")
+        return Response(status_code=500, content=str(e))
 
 @router.post("/battle", status_code=status.HTTP_200_OK)
 def monster_card_batte(payload: dict):

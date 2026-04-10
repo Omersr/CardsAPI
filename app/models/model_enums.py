@@ -47,3 +47,8 @@ class TeamType(str, Enum):
     @classmethod
     def _missing_(cls, value):
         return cls.neutral
+
+class DownloadType(str, Enum):
+    monster_card = "monster-cards"
+    action_card = "action-cards"
+    item_card = "item-cards" 

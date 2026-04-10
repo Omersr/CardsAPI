@@ -7,7 +7,9 @@ from fastapi import APIRouter, Response, status
 from fastapi.responses import HTMLResponse
 
 from app.models.action_cards import ActionCard
+from app.models.model_enums import DownloadType
 from app.schemas.action_cards import ActionCardCreate, ActionCardOut, ActionCardUpdate
+from app.utils.image_utils import download_card_image
 
 router = APIRouter(prefix="/action-cards", tags=["action-cards"])
 logger = logging.getLogger("uvicorn.error")
@@ -84,4 +86,15 @@ def render_action_card(card_id: int):
         return ActionCard.display_action_card(card_id)
     except Exception as e:
         logger.error(f"Error rendering ActionCard with id {card_id}: {str(e)}")
+        return Response(status_code=500, content=str(e))
+
+@router.get("/download/{card_id:int}", response_class=HTMLResponse)
+def download_item_card(card_id: int):
+    try:
+        if not ActionCard.get_by_id(card_id):
+            logger.error(f"ItemCard with id {card_id} not found for download.")
+            return Response(status_code=404, content=f"ItemCard with id {card_id} not found.")
+        return download_card_image(card_id, DownloadType.action_card.value)
+    except Exception as e:
+        logger.error(f"Error rendering ItemCard with id {card_id}: {str(e)}")
         return Response(status_code=500, content=str(e))
