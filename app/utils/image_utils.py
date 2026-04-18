@@ -1,21 +1,29 @@
 from pathlib import Path
-from PIL import Image
+from PIL import Image, ImageOps
 from http.client import HTTPException
 from playwright.sync_api import sync_playwright
 import logging
 from app.models.model_enums import DownloadType
 logger = logging.getLogger("uvicorn.error")
-def ensure_image_size(image_path: Path, target_size: tuple[int, int] = (230, 150)) -> None:
-        if not image_path.exists():
-            return
+def ensure_image_size(image_path: Path, target_size: tuple[int, int] = (230, 200)) -> None:
+    if not image_path.exists():
+        return
 
-        try:
-            with Image.open(image_path) as img:
-                if img.size != target_size:
-                    resized = img.resize(target_size, Image.Resampling.LANCZOS)
-                    resized.save(image_path)
-        except Exception as e:
-            raise HTTPException(status_code=400, detail=f"Could not process image {image_path}: {e}")
+    try:
+        with Image.open(image_path) as img:
+            img = img.convert("RGBA")
+
+            # Resize proportionally and crop from center to exact target size
+            fitted = ImageOps.fit(
+                img,
+                target_size,
+                method=Image.Resampling.LANCZOS,
+                centering=(0.5, 0.5),
+            )
+
+            fitted.save(image_path, format="PNG")
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Could not process image {image_path}: {e}")
 
 def download_card_image(card_id ,card_type: str):
     sub_folder = "monster_cards" if card_type == DownloadType.monster_card.value else "power_up_cards"
