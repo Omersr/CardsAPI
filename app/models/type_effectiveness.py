@@ -13,12 +13,12 @@ class TypeEffectiveness(Base):
     effective: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     
     @staticmethod
-    def is_effective(attacker_type: CardType, defender_type: CardType) -> bool:
+    def effectiveness_value(attacker_type: CardType, defender_type: CardType) -> float:
         db = get_current_db()
-        result = db.execute(
-            select(TypeEffectiveness.effective).where(
-                TypeEffectiveness.attacker_type == attacker_type,
-                TypeEffectiveness.defender_type == defender_type
-            )
-        ).scalar_one_or_none()     
-        return result if result is not None else False
+        result = db.scalar(
+        select(TypeEffectiveness.effective).where(
+            TypeEffectiveness.attacker_type == attacker_type,
+            TypeEffectiveness.defender_type == defender_type))
+        if result is None:
+            return 1.0
+        return 2.0 if result else 0.5

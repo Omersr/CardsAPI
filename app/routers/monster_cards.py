@@ -115,8 +115,10 @@ def download_monster_card(card_id: int):
 @router.post("/battle", status_code=status.HTTP_200_OK)
 def monster_card_batte(payload: dict):
     try:
-        card1_id = payload.get("card1_id")
-        card2_id = payload.get("card2_id")
+        if len(payload.get("card_ids", [])) != 2:
+            logger.error("Exactly two card_ids must be provided for battle.")
+            return Response(status_code=400, content="Exactly two card_ids must be provided for battle.")
+        card1_id, card2_id = payload.get("card_ids")[0], payload.get("card_ids")[1]
         if not card1_id or not card2_id:
             logger.error("Both card1_id and card2_id are required.")
             return Response(status_code=400, content="Both card1_id and card2_id are required.")

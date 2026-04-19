@@ -262,10 +262,8 @@ class MonsterCard(Base):
 
         for attacker_type in first_attack_types:
             for defender_type in second_defense_types:
-                if TypeEffectiveness.is_effective(attacker_type, defender_type):
-                    first_multiplier *= 2
-                else:
-                    first_multiplier *= 0.5
+                first_multiplier *= TypeEffectiveness.effectiveness_value(attacker_type, defender_type)
+                    
 
         second_attack_types = [second_monster_card.primary_type]
         if second_monster_card.secondary_type is not None:
@@ -277,9 +275,7 @@ class MonsterCard(Base):
 
         for attacker_type in second_attack_types:
             for defender_type in first_defense_types:
-                if TypeEffectiveness.is_effective(attacker_type, defender_type):
-                    second_multiplier *= 2
-                else:
-                    second_multiplier *= 0.5
+                print(f"Calculating effectiveness for attacker {attacker_type} against defender {defender_type}")
+                second_multiplier *= TypeEffectiveness.effectiveness_value(attacker_type, defender_type)
 
         return first_multiplier, second_multiplier
