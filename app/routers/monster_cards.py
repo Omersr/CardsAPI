@@ -8,7 +8,7 @@ from fastapi.responses import HTMLResponse
 from app.models.monster_card import *
 from app.models.model_enums import DownloadType
 from app.schemas.monster_card import MonsterCardCreate, MonsterCardOut, MonsterCardUpdate
-from app.services.battle_service import auto_battle
+from app.services.battle_service import battle
 from app.services.cards_service import display_monster_cards_possesions
 from app.utils.image_utils import download_card_image
 
@@ -129,7 +129,7 @@ def monster_card_batte(payload: dict):
             logger.error("One or both cards not found.")
             return Response(status_code=404, content="One or both cards not found.")
 
-        winner_card = auto_battle(card1, card2)
+        winner_card = battle(card1, card2)
         return f"{winner_card.name} is the winner!"
     except Exception as e:
         logger.error(f"Error during MonsterCard battle: {str(e)}")

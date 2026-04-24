@@ -98,6 +98,21 @@ class MonsterCard(Base):
     }
 
 
+    def to_dict(self) -> dict:
+        return {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "primary_type": self.primary_type.value if self.primary_type else None,
+            "secondary_type": self.secondary_type.value if self.secondary_type else None,
+            "team": self.team.value if self.team else None,
+            "rarity": self.rarity.value if self.rarity else None,
+            "health": self.health,
+            "attack": self.attack,
+            "defense": self.defense,
+            "speed": self.speed,
+            "alive": self.alive,
+        }
 
     @staticmethod
     def create_card(data: MonsterCardCreate) -> "MonsterCard":
@@ -197,6 +212,15 @@ class MonsterCard(Base):
 
         db.delete(card)
         db.commit()
+    
+    @staticmethod
+    def kill_card(card_id: int) -> None:
+        db = get_current_db()
+        card = MonsterCard.get_card(card_id)
+        if card is None:
+            raise HTTPException(status_code=404, detail=f"Card id {card_id} not found")
+        card.alive = False
+        db.commit()
 
     @staticmethod
     def display_monster_card(card_id: int) -> str:
@@ -275,7 +299,6 @@ class MonsterCard(Base):
 
         for attacker_type in second_attack_types:
             for defender_type in first_defense_types:
-                print(f"Calculating effectiveness for attacker {attacker_type} against defender {defender_type}")
                 second_multiplier *= TypeEffectiveness.effectiveness_value(attacker_type, defender_type)
 
         return first_multiplier, second_multiplier
