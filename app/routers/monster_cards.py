@@ -9,7 +9,7 @@ from app.models.monster_card import *
 from app.models.model_enums import DownloadType
 from app.schemas.monster_card import MonsterCardCreate, MonsterCardOut, MonsterCardUpdate
 from app.services.battle_service import battle
-from app.services.cards_service import display_monster_cards_possesions
+from app.services.cards_service import display_alive_team_monster_cards, display_monster_cards_possesions
 from app.utils.image_utils import download_card_image
 
 router = APIRouter(prefix="/monster-cards", tags=["monster-cards"])
@@ -145,5 +145,15 @@ def display_monster_cards_possesions_route(monster_card_ids: str):
 
     except Exception as e:
         logger.error(f"Error during display_possesion: {str(e)}")
+        return Response(status_code=500, content=str(e))
+
+
+@router.get("/display_alive_teams", response_class=HTMLResponse)
+def display_alive_team_monster_cards_route():
+    try:
+        return display_alive_team_monster_cards()
+
+    except Exception as e:
+        logger.error(f"Error during display_alive_teams: {str(e)}")
         return Response(status_code=500, content=str(e))
     
