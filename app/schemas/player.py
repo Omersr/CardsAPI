@@ -9,6 +9,7 @@ class PlayerBase(InputModel):
     name: str = Field(..., min_length=1, max_length=255)
     team: TeamType
     monster_card_id: Optional[int] = None
+    is_king: bool = False
 
 
 class PlayerCreate(PlayerBase):
@@ -19,7 +20,10 @@ class PlayerCreate(PlayerBase):
 class PlayerOut(ORMModel,PlayerBase):
     id: int # response model inherits ORMModel ⇒ from_attributes=True
     
-class PlayerUpdate(PlayerBase):
-    pass
+class PlayerUpdate(InputModel):
+    name: Optional[str] = Field(None, min_length=1, max_length=255)
+    team: Optional[TeamType] = None
+    monster_card_id: Optional[int] = None
+    is_king: Optional[bool] = None
     
 

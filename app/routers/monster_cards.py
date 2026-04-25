@@ -3,14 +3,14 @@ from __future__ import annotations
 import logging
 from typing import List, Optional, Dict, Any
 
-from fastapi import APIRouter, Response, status
-from fastapi.responses import HTMLResponse
+from fastapi import APIRouter, Request, Response, status
+from fastapi.responses import FileResponse, HTMLResponse
 from app.models.monster_card import *
 from app.models.model_enums import DownloadType
 from app.schemas.monster_card import MonsterCardCreate, MonsterCardOut, MonsterCardUpdate
 from app.services.battle_service import battle
 from app.services.cards_service import display_alive_team_monster_cards, display_monster_cards_possesions
-from app.utils.image_utils import download_card_image
+from app.utils.image_utils import download_alive_team_state_image, download_card_image
 
 router = APIRouter(prefix="/monster-cards", tags=["monster-cards"])
 logger = logging.getLogger("uvicorn.error")
@@ -155,5 +155,19 @@ def display_alive_team_monster_cards_route():
 
     except Exception as e:
         logger.error(f"Error during display_alive_teams: {str(e)}")
+        return Response(status_code=500, content=str(e))
+
+@router.get("/download_alive_teams")
+def download_alive_team_monster_cards_route(request: Request):
+    try:
+        output_path = download_alive_team_state_image(str(request.base_url))
+        return FileResponse(
+            output_path,
+            media_type="image/png",
+            filename=output_path.name,
+        )
+
+    except Exception as e:
+        logger.error(f"Error during download_alive_teams: {str(e)}")
         return Response(status_code=500, content=str(e))
     

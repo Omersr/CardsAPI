@@ -198,8 +198,12 @@ def display_alive_team_monster_cards() -> str:
                     for monster, player in card_rows:
                         monster_html = MonsterCard.display_monster_card(monster.id)
                         player_name = player.name if player is not None else "No player assigned"
+                        king_badge = """
+                            <div class="king-icon" title="King" aria-label="King">&#9812;</div>
+                        """ if player is not None and player.is_king else ""
                         cards_html += f"""
                         <article class="player-card">
+                            {king_badge}
                             <h3 class="player-name">{escape(player_name)}</h3>
                             <iframe class="card-frame" srcdoc="{escape(monster_html, quote=True)}"></iframe>
                         </article>
@@ -324,6 +328,21 @@ def display_alive_team_monster_cards() -> str:
                         line-height: 1.1;
                         text-align: center;
                         overflow-wrap: anywhere;
+                    }}
+
+                    .king-icon {{
+                        width: 34px;
+                        height: 34px;
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        margin-bottom: -4px;
+                        border-radius: 999px;
+                        background: #f8d34b;
+                        color: #18202a;
+                        font-size: 22px;
+                        line-height: 1;
+                        box-shadow: 0 3px 9px rgba(24, 32, 42, 0.22);
                     }}
 
                     .card-frame {{

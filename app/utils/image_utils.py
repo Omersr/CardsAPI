@@ -1,8 +1,10 @@
 from pathlib import Path
+from datetime import datetime
 from PIL import Image, ImageOps
 from http.client import HTTPException
 from playwright.sync_api import sync_playwright
 import logging
+from app.config import TEAM_STATE_IMAGES_DIR
 from app.models.model_enums import DownloadType
 logger = logging.getLogger("uvicorn.error")
 def ensure_image_size(image_path: Path, target_size: tuple[int, int] = (230, 200)) -> None:
@@ -40,4 +42,23 @@ def download_card_image(card_id ,card_type: str):
         return output_path
     except Exception as e:
         logger.info(f"Failed to convert HTML to image: {e}")
+        raise e
+
+def download_alive_team_state_image(base_url: str) -> Path:
+    TEAM_STATE_IMAGES_DIR.mkdir(parents=True, exist_ok=True)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    output_path = TEAM_STATE_IMAGES_DIR / f"alive_team_monster_cards_{timestamp}.png"
+    display_url = f"{base_url.rstrip('/')}/monster-cards/display_alive_teams"
+
+    try:
+        with sync_playwright() as p:
+            browser = p.chromium.launch()
+            page = browser.new_page(viewport={"width": 1920, "height": 1080})
+            page.goto(display_url, wait_until="networkidle")
+            page.screenshot(path=output_path, full_page=True)
+            browser.close()
+        logger.info(f"Successfully converted alive team state to image: {output_path}")
+        return output_path
+    except Exception as e:
+        logger.info(f"Failed to convert alive team state to image: {e}")
         raise e

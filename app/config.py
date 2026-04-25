@@ -17,6 +17,7 @@ HTML_ACTION_CARD_TEMPLATE = ASSETS_POWER_UP_DIR / "power_up_templates" / "action
 
 # Image directories on disk
 MONSTER_CARD_IMAGES_DIR = ASSETS_MONSTER_DIR / "monster_card_images"
+TEAM_STATE_IMAGES_DIR = ASSETS_MONSTER_DIR / "team_state_images"
 TYPES_ICONS_DIR = ASSETS_MONSTER_DIR / "type_icons"
 ITEM_CARD_IMAGES_DIR = ASSETS_POWER_UP_DIR / "items_images"
 
